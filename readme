@@ -1,59 +1,71 @@
-# Sofar Power Flow Card
+class SofarPowerFlowCard extends HTMLElement {
+    static getConfigElement() {
+        return document.createElement("sofar-power-flow-card-editor");
+    }
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![GitHub Release][releases-shield]][releases]
-[![License][license-shield]](LICENSE)
+    static getStubConfig() {
+        return {
+            entities: {
+                solar: "sensor.pv1_power",
+                grid: "sensor.activepowerpcc",
+                home: "sensor.activepowerloadsys"
+            }
+        };
+    }
 
-A custom power flow visualization card for Sofar inverters in Home Assistant.
+    setConfig(config) {
+        if (!config.entities) {
+            throw new Error("Entities must be specified");
+        }
+        this._config = config;
+        this.render();
+    }
 
-## Installation
+    set hass(hass) {
+        this._hass = hass;
+        this.render();
+    }
 
-### HACS (Recommended)
-1. Make sure [HACS](https://hacs.xyz/) is installed
-2. Add this repository as a custom repository in HACS
-   - Click on the menu icon in the top right corner and select "Custom repositories"
-   - Add URL `https://github.com/cebolix00/sofar-power-flow-card`
-   - Select category "Lovelace"
-3. Click Install
-4. Restart Home Assistant
+    render() {
+        if (!this._hass || !this._config) return;
 
-### Manual Installation
-1. Download `sofar-power-flow-card.js` from the latest release
-2. Copy it to `config/www/` directory
-3. Add the following to your `configuration.yaml`:
+        if (!this.content) {
+            this.innerHTML = `
+                <ha-card>
+                    <div class="card-content">
+                        <div id="values"></div>
+                    </div>
+                </ha-card>
+            `;
+            this.content = this.querySelector('#values');
+        }
 
-```yaml
-lovelace:
-  resources:
-    - url: /local/sofar-power-flow-card.js
-      type: module
-```
+        const entities = this._config.entities;
+        let html = '';
 
-## Configuration
+        // Simple list of values
+        for (const [key, entity_id] of Object.entries(entities)) {
+            const state = this._hass.states[entity_id];
+            html += `
+                <div style="margin: 8px 0;">
+                    <strong>${key}:</strong> 
+                    ${state ? state.state + (state.attributes.unit_of_measurement || '') : 'N/A'}
+                </div>
+            `;
+        }
 
-Add the card to your dashboard with this configuration:
+        this.content.innerHTML = html;
+    }
+}
 
-```yaml
-type: custom:sofar-power-flow-card
-entities:
-  solar: sensor.pv1_power
-  grid: sensor.activepowerpcc
-  home: sensor.activepowerloadsys
-  battery: sensor.battery_1_power
-  batteryLevel: sensor.battery_1_soc
-```
+// Register the card
+customElements.define("sofar-power-flow-card", SofarPowerFlowCard);
 
-## Options
-
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| entities | object | required | Entity mappings |
-| solar | string | required | Solar power sensor |
-| grid | string | required | Grid power sensor |
-| home | string | required | Home consumption sensor |
-| battery | string | optional | Battery power sensor |
-| batteryLevel | string | optional | Battery level sensor |
-
-[releases-shield]: https://img.shields.io/github/release/YOURUSERNAME/sofar-power-flow-card.svg
-[releases]: https://github.com/YOURUSERNAME/sofar-power-flow-card/releases
-[license-shield]: https://img.shields.io/github/license/YOURUSERNAME/sofar-power-flow-card.svg
+// Add to custom cards
+window.customCards = window.customCards || [];
+window.customCards.push({
+    type: "sofar-power-flow-card",
+    name: "Sofar Power Flow Card",
+    preview: false,
+    description: "Basic power flow visualization"
+});

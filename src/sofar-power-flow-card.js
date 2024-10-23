@@ -1,113 +1,138 @@
-(() => {
-    const html = window.customElements.get('home-assistant-main') 
-        ? Object.getPrototypeOf(customElements.get('home-assistant-main')).prototype.html 
-        : null;
-    const css = window.customElements.get('home-assistant-main') 
-        ? Object.getPrototypeOf(customElements.get('home-assistant-main')).prototype.css 
-        : null;
+import { LitElement, html, css } from 'lit';
 
-    console.log('Loading Sofar Power Flow Card...');
+class SofarPowerFlowCard extends LitElement {
+  static get properties() {
+    return {
+      hass: { type: Object },
+      config: { type: Object }
+    };
+  }
 
-    class SofarPowerFlowCard extends HTMLElement {
-        constructor() {
-            super();
-            this._initialized = false;
-        }
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+        padding: 16px;
+      }
+      .card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .power-flow {
+        display: grid;
+        grid-template-areas:
+          "solar  .      ."
+          ".      home   ."
+          "battery grid  .";
+        gap: 20px;
+        margin: 20px 0;
+      }
+      .power-item {
+        text-align: center;
+        padding: 16px;
+        border-radius: 12px;
+        background: var(--ha-card-background, var(--card-background-color, white));
+        box-shadow: var(--ha-card-box-shadow, 0 2px 4px rgba(0,0,0,0.1));
+      }
+      .power-value {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin: 8px 0;
+        color: var(--primary-text-color);
+      }
+      .label {
+        font-size: 1.1em;
+        color: var(--secondary-text-color);
+      }
+      .battery-level {
+        font-size: 0.9em;
+        color: var(--secondary-text-color);
+        margin-top: 4px;
+      }
+      ha-card {
+        background: var(--ha-card-background, var(--card-background-color, white));
+        border-radius: var(--ha-card-border-radius, 12px);
+        box-shadow: var(--ha-card-box-shadow, 0 2px 4px rgba(0,0,0,0.1));
+        padding: 8px;
+      }
+    `;
+  }
 
-        connectedCallback() {
-            if (this._initialized) return;
-            this._initialized = true;
+  setConfig(config) {
+    if (!config.entities) {
+      throw new Error('Please define entities');
+    }
+    if (!config.entities.solar || !config.entities.grid || !config.entities.home) {
+      throw new Error('Required entities: solar, grid, home');
+    }
+    this.config = config;
+  }
 
-            const card = document.createElement('ha-card');
-            const content = document.createElement('div');
-            content.className = 'card-content';
-            card.appendChild(content);
-            this.appendChild(card);
-
-            console.log('Sofar Power Flow Card initialized');
-            this._content = content;
-            this._render();
-        }
-
-        set hass(hass) {
-            this._hass = hass;
-            this._render();
-        }
-
-        setConfig(config) {
-            if (!config.entities) {
-                throw new Error('Please define entities');
-            }
-            if (!config.entities.solar || !config.entities.grid || !config.entities.home) {
-                throw new Error('Required entities: solar, grid, home');
-            }
-            this._config = config;
-        }
-
-        _render() {
-            if (!this._initialized || !this._config || !this._hass) return;
-
-            const solar = this._hass.states[this._config.entities.solar];
-            const grid = this._hass.states[this._config.entities.grid];
-            const home = this._hass.states[this._config.entities.home];
-            const battery = this._config.entities.battery ? this._hass.states[this._config.entities.battery] : null;
-            const batteryLevel = this._config.entities.batteryLevel ? this._hass.states[this._config.entities.batteryLevel] : null;
-
-            this._content.innerHTML = `
-                <style>
-                    .grid {
-                        display: grid;
-                        grid-template-areas:
-                            "solar  .      ."
-                            ".      home   ."
-                            "battery grid  .";
-                        gap: 16px;
-                        padding: 16px;
-                    }
-                    .item {
-                        padding: 16px;
-                        background: var(--card-background-color);
-                        border-radius: var(--ha-card-border-radius, 4px);
-                        text-align: center;
-                    }
-                    .value {
-                        font-size: 1.2em;
-                        font-weight: bold;
-                        margin-top: 8px;
-                    }
-                </style>
-                <div class="grid">
-                    <div class="item" style="grid-area: solar">
-                        <div>Solar</div>
-                        <div class="value">${solar ? Math.round(solar.state) + 'W' : 'N/A'}</div>
-                    </div>
-                    <div class="item" style="grid-area: home">
-                        <div>Home</div>
-                        <div class="value">${home ? Math.round(home.state) + 'W' : 'N/A'}</div>
-                    </div>
-                    <div class="item" style="grid-area: grid">
-                        <div>Grid</div>
-                        <div class="value">${grid ? Math.round(grid.state) + 'W' : 'N/A'}</div>
-                    </div>
-                    ${battery ? `
-                        <div class="item" style="grid-area: battery">
-                            <div>Battery</div>
-                            <div class="value">${Math.round(battery.state)}W</div>
-                            ${batteryLevel ? `<div>${Math.round(batteryLevel.state)}%</div>` : ''}
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
+  render() {
+    if (!this.hass || !this.config) {
+      return html``;
     }
 
-    console.log('Defining sofar-power-flow-card custom element');
-    customElements.define('sofar-power-flow-card', SofarPowerFlowCard);
+    const solar = this.hass.states[this.config.entities.solar];
+    const grid = this.hass.states[this.config.entities.grid];
+    const home = this.hass.states[this.config.entities.home];
+    const battery = this.config.entities.battery ? this.hass.states[this.config.entities.battery] : null;
+    const batteryLevel = this.config.entities.batteryLevel ? this.hass.states[this.config.entities.batteryLevel] : null;
 
-    window.customCards = window.customCards || [];
-    window.customCards.push({
-        type: "sofar-power-flow-card",
-        name: "Sofar Power Flow Card",
-        description: "Power flow visualization for Sofar inverters",
-    });
-})();
+    return html`
+      <ha-card>
+        <div class="card-content">
+          <div class="power-flow">
+            <div class="power-item" style="grid-area: solar;">
+              <div class="label">Solar</div>
+              <div class="power-value">
+                ${solar ? `${Math.round(solar.state)}W` : 'N/A'}
+              </div>
+            </div>
+
+            <div class="power-item" style="grid-area: home;">
+              <div class="label">Home</div>
+              <div class="power-value">
+                ${home ? `${Math.round(home.state)}W` : 'N/A'}
+              </div>
+            </div>
+
+            <div class="power-item" style="grid-area: grid;">
+              <div class="label">Grid</div>
+              <div class="power-value">
+                ${grid ? `${Math.round(grid.state)}W` : 'N/A'}
+              </div>
+            </div>
+
+            ${battery ? html`
+              <div class="power-item" style="grid-area: battery;">
+                <div class="label">Battery</div>
+                <div class="power-value">
+                  ${Math.round(battery.state)}W
+                </div>
+                ${batteryLevel ? html`
+                  <div class="battery-level">
+                    ${Math.round(batteryLevel.state)}%
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+}
+
+// Register the card
+customElements.define('sofar-power-flow-card', SofarPowerFlowCard);
+
+// Add to custom cards list
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "sofar-power-flow-card",
+  name: "Sofar Power Flow Card",
+  description: "Power flow visualization for Sofar inverters",
+  preview: true
+});

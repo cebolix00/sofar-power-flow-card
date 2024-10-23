@@ -1,0 +1,9 @@
+{
+    "name": "Sofar Power Flow Card",
+    "version": "1.0.0",
+    "description": "Power Flow Card for Sofar Inverters in Home Assistant",
+    "author": "Your Name",
+    "homepage": "https://github.com/cebolix00/sofar-power-flow-card",
+    "type": "plugin",
+    "content_in_root": false
+  }

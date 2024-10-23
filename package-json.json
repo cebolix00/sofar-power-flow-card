@@ -17,7 +17,7 @@
     "sofar",
     "solar"
   ],
-  "author": "Your Name",
+  "author": "Daniel",
   "license": "MIT",
   "dependencies": {
     "lit": "^2.7.0"

@@ -39,6 +39,10 @@ class SofarPowerFlowCard extends LitElement {
         font-size: 1.2em;
         font-weight: bold;
       }
+      .battery-level {
+        font-size: 0.9em;
+        color: var(--secondary-text-color);
+      }
     `;
   }
 
@@ -71,22 +75,25 @@ class SofarPowerFlowCard extends LitElement {
           <div class="power-flow">
             <div class="power-item" style="grid-area: solar;">
               <div>Solar</div>
-              <div class="power-value">${solar ? `${solar.state}W` : 'N/A'}</div>
+              <div class="power-value">${solar ? `${Math.round(solar.state)}W` : 'N/A'}</div>
             </div>
+            
             <div class="power-item" style="grid-area: home;">
               <div>Home</div>
-              <div class="power-value">${home ? `${home.state}W` : 'N/A'}</div>
+              <div class="power-value">${home ? `${Math.round(home.state)}W` : 'N/A'}</div>
             </div>
+            
             <div class="power-item" style="grid-area: grid;">
               <div>Grid</div>
-              <div class="power-value">${grid ? `${grid.state}W` : 'N/A'}</div>
+              <div class="power-value">${grid ? `${Math.round(grid.state)}W` : 'N/A'}</div>
             </div>
+            
             ${battery ? html`
               <div class="power-item" style="grid-area: battery;">
                 <div>Battery</div>
-                <div class="power-value">${battery.state}W</div>
+                <div class="power-value">${Math.round(battery.state)}W</div>
                 ${batteryLevel ? html`
-                  <div>${batteryLevel.state}%</div>
+                  <div class="battery-level">${Math.round(batteryLevel.state)}%</div>
                 ` : ''}
               </div>
             ` : ''}

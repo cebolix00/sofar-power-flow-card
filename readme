@@ -12,7 +12,7 @@ A custom power flow visualization card for Sofar inverters in Home Assistant.
 1. Make sure [HACS](https://hacs.xyz/) is installed
 2. Add this repository as a custom repository in HACS
    - Click on the menu icon in the top right corner and select "Custom repositories"
-   - Add URL `https://github.com/YOURUSERNAME/sofar-power-flow-card`
+   - Add URL `https://github.com/cebolix00/sofar-power-flow-card`
    - Select category "Lovelace"
 3. Click Install
 4. Restart Home Assistant

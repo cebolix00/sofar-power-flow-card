@@ -2,13 +2,11 @@
   "name": "sofar-power-flow-card",
   "version": "1.0.0",
   "description": "Power Flow Card for Sofar Inverters in Home Assistant",
-  "main": "dist/sofar-power-flow-card.js",
+  "main": "src/power-flow-card.js",
   "type": "module",
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -c --watch",
-    "lint": "eslint src/*",
-    "format": "prettier --write \"src/**/*.{js,ts}\""
+    "watch": "rollup -c --watch"
   },
   "keywords": [
     "home-assistant",
@@ -26,8 +24,6 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-commonjs": "^24.0.1",
     "rollup": "^2.79.1",
-    "rollup-plugin-terser": "^7.0.2",
-    "prettier": "^2.8.4",
-    "eslint": "^8.35.0"
+    "rollup-plugin-terser": "^7.0.2"
   }
 }

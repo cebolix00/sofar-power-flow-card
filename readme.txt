@@ -1,26 +1,31 @@
 # Sofar Power Flow Card
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![GitHub Release][releases-shield]][releases]
+[![License][license-shield]](LICENSE)
+
 A custom power flow visualization card for Sofar inverters in Home Assistant.
 
 ## Installation
 
 ### HACS (Recommended)
-1. Open HACS in your Home Assistant instance
-2. Click on "Frontend" section
-3. Click the "+ Explore & Download Repositories" button
-4. Search for "Sofar Power Flow Card"
-5. Click Download
-6. Restart Home Assistant
+1. Make sure [HACS](https://hacs.xyz/) is installed
+2. Add this repository as a custom repository in HACS
+   - Click on the menu icon in the top right corner and select "Custom repositories"
+   - Add URL `https://github.com/YOURUSERNAME/sofar-power-flow-card`
+   - Select category "Lovelace"
+3. Click Install
+4. Restart Home Assistant
 
 ### Manual Installation
-1. Download `power-flow-card.js` from the latest release
-2. Copy it to `config/www/power-flow-card/` directory
+1. Download `sofar-power-flow-card.js` from the latest release
+2. Copy it to `config/www/` directory
 3. Add the following to your `configuration.yaml`:
 
 ```yaml
 lovelace:
   resources:
-    - url: /local/power-flow-card/power-flow-card.js
+    - url: /local/sofar-power-flow-card.js
       type: module
 ```
 
@@ -38,7 +43,7 @@ entities:
   batteryLevel: sensor.battery_1_soc
 ```
 
-### Options
+## Options
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
@@ -49,7 +54,6 @@ entities:
 | battery | string | optional | Battery power sensor |
 | batteryLevel | string | optional | Battery level sensor |
 
-## Support
-
-For bugs or feature requests, please [open an issue](https://github.com/yourusername/sofar-power-flow-card/issues).
-
+[releases-shield]: https://img.shields.io/github/release/YOURUSERNAME/sofar-power-flow-card.svg
+[releases]: https://github.com/YOURUSERNAME/sofar-power-flow-card/releases
+[license-shield]: https://img.shields.io/github/license/YOURUSERNAME/sofar-power-flow-card.svg
